@@ -95,6 +95,11 @@ When reading a key with key derivation enabled,
 if the key type supports public keys, this will
 return the public key for the given context.`,
 			},
+
+			"input": &framework.FieldSchema{
+				Type: framework.TypeString,
+				Description: `Base64 encoded encryption-key.`,
+			},
 		},
 
 		Callbacks: map[logical.Operation]framework.OperationFunc{
@@ -124,6 +129,7 @@ func (b *backend) pathPolicyWrite(ctx context.Context, req *logical.Request, d *
 	keyType := d.Get("type").(string)
 	exportable := d.Get("exportable").(bool)
 	allowPlaintextBackup := d.Get("allow_plaintext_backup").(bool)
+	key := d.Get("input").(string)
 
 	if !derived && convergent {
 		return logical.ErrorResponse("convergent encryption requires derivation to be enabled"), nil
@@ -169,6 +175,14 @@ func (b *backend) pathPolicyWrite(ctx context.Context, req *logical.Request, d *
 	}
 	if p == nil {
 		return nil, fmt.Errorf("error generating key: returned policy was nil")
+	}
+	if len(key) != 0 {
+		p.Key, err = base64.StdEncoding.DecodeString(key)
+		if err != nil {
+			return nil, err
+		}
+		p.MigrateKeyToKeysMap()
+		p.Persist(ctx, req.Storage)
 	}
 	if b.System().CachingDisabled() {
 		p.Unlock()
