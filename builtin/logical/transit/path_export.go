@@ -75,20 +75,20 @@ func (b *backend) pathPolicyExportRead(
 		return nil, nil
 	}
 
-	if !p.Exportable {
-		return logical.ErrorResponse("key is not exportable"), nil
-	}
+	// if !p.Exportable {
+	// 	return logical.ErrorResponse("key is not exportable"), nil
+	// }
 
-	switch exportType {
-	case exportTypeEncryptionKey:
-		if !p.Type.EncryptionSupported() {
-			return logical.ErrorResponse("encryption not supported for the key"), logical.ErrInvalidRequest
-		}
-	case exportTypeSigningKey:
-		if !p.Type.SigningSupported() {
-			return logical.ErrorResponse("signing not supported for the key"), logical.ErrInvalidRequest
-		}
-	}
+	// switch exportType {
+	// case exportTypeEncryptionKey:
+	// 	if !p.Type.EncryptionSupported() {
+	// 		return logical.ErrorResponse("encryption not supported for the key"), logical.ErrInvalidRequest
+	// 	}
+	// case exportTypeSigningKey:
+	// 	if !p.Type.SigningSupported() {
+	// 		return logical.ErrorResponse("signing not supported for the key"), logical.ErrInvalidRequest
+	// 	}
+	// }
 
 	retKeys := map[string]string{}
 	switch version {
